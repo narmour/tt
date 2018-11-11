@@ -3,6 +3,7 @@
 #define TT_H
 class TT{
 	public:
+        TT() { root = nullptr ; }
         void buildTree(ifstream &input);
         vector<int> findhelp(TTNode* root, string key);
 	private:

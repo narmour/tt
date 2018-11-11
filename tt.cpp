@@ -33,25 +33,25 @@ TTNode* TTNode::add(TTNode* it) {
     TTNode *N1 = new TTNode(_lkey, _lval, string(), vector<int>() , it, this, nullptr);
     it->setLeftChild(_left);
     _left = _center; _center = _right; _right = nullptr;
-    _lkey = _rkey; _lval = _rval; _rkey = nullptr; _rval = nullptr;
+    _lkey = _rkey; _lval = _rval; _rkey = nullptr; _rval = vector<int>();
     return N1;
   }
   else if (_rkey >= it->lkey()) { // Add center
-    it->setCenterChild(new TTNode (_rkey, _rval, "", nullptr, it->cchild(), _right, nullptr));
+    it->setCenterChild(new TTNode (_rkey, _rval, "", vector<int>(), it->cchild(), _right, nullptr));
     it->setLeftChild(this);
-    _rkey = nullptr; _rval = nullptr; _right = nullptr;
+    _rkey = nullptr; _rval = vector<int>(); _right = nullptr;
     return it;  //TODO: this might be a problem
   }
   else { // Add right
-    TTNode *N1 = new TTNode (_rkey, _rval, "", nullptr, this, it, nullptr);
+    TTNode *N1 = new TTNode (_rkey, _rval, "", vector<int>(), this, it, nullptr);
     it->setLeftChild(_right);
-    _right = nullptr; _rkey = nullptr; _rval = nullptr;
+    _right = nullptr; _rkey = nullptr; _rval = vector<int>();
     return N1;
   }
 }
 
 vector<int>  TT::findhelp(TTNode* root, string k) {
-  if (root == nullptr) return nullptr;          // val not found
+  if (root == nullptr) return vector<int>();          // val not found
   if (k == root->lkey()) return root->lval();
   if ((!root->rkey().empty()) && (k == root->rkey()) )
     return root->rval();
@@ -65,25 +65,34 @@ vector<int>  TT::findhelp(TTNode* root, string k) {
 }
 
 
-TTNode *inserthelp(TTNode* rt, string k, vector<int> e,int line) {
+// add  line to key k's line vector
+TTNode *inserthelp(TTNode* rt, string k,int line,int &distinctWords) {
   TTNode* retval;
-  if (rt == nullptr) // Empty tree: create a leaf node for root
-    return new TTNode(k, e, "", nullptr, nullptr, nullptr, nullptr);
-  if (rt->isLeaf()) // At leaf node: insert here
-    return rt->add(new TTNode(k, e, "", nullptr, nullptr, nullptr, nullptr));
+  if (rt == nullptr){ // Empty tree: create a leaf node for root
+    retval = new TTNode(k, vector<int>(), "", vector<int>(), nullptr, nullptr, nullptr);
+    retval->add_lval(line);
+    distinctWords++;
+    return retval;
+  }
+  if (rt->isLeaf()){ // At leaf node: insert here
+      TTNode* temp = new TTNode(k, vector<int>(), "", vector<int>(), nullptr, nullptr, nullptr);
+      temp->add_lval(line);
+    distinctWords++;
+    return rt->add(temp);
+  }
   // Add to internal node
   if (k < rt->lkey()) { // Insert left
-    retval = inserthelp(rt->lchild(), k, e,line);
+    retval = inserthelp(rt->lchild(), k,line,distinctWords);
     if (retval == rt->lchild()) return rt;
     else return rt->add(retval);
   }
   else if((rt->rkey().empty()) || (k < rt->rkey())) {
-    retval = inserthelp(rt->cchild(), k, e,line);
+    retval = inserthelp(rt->cchild(), k,line,distinctWords);
     if (retval == rt->cchild()) return rt;
     else return rt->add(retval);
   }
   else { // Insert right
-    retval = inserthelp(rt->rchild(), k, e,line);
+    retval = inserthelp(rt->rchild(), k,line,distinctWords);
     if (retval == rt->rchild()) return rt;
     else return rt->add(retval);
   }
@@ -116,7 +125,8 @@ void TT::buildTree(ifstream & input){
                 //file it came from, the root of our tree, and the distinct word counter
                 //TODO
 
-                inserthelp(root, tempWord, this, distWords);
+                cout << "inserting: " << tempWord << endl;
+                inserthelp(root, tempWord,line, distWords);
                 //Increment our total number of words inserted
                 numWords++;
                 //Clear out tempWord so we can use it again
@@ -141,8 +151,8 @@ void TT::buildTree(ifstream & input){
 	cout << setw(40) << std::left 
 	<<"Total time spent building index: " << totalTime << endl;
 
-	cout << setw(40) << std::left
-	<<"Height of BST is : " << treeHeight << endl;
+	//cout << setw(40) << std::left
+	//<<"Height of BST is : " << treeHeight << endl;
  
 }
 

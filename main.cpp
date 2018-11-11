@@ -21,6 +21,7 @@ int main(int argc, char* argv[]) {
 
 	if(input.is_open()){
             myTree.buildTree(input);
+
             input.close();
 
             /*
