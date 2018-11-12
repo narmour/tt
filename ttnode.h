@@ -17,6 +17,9 @@ class TTNode{
     	TTNode(string lk, vector<int> lv, string rk, vector<int> rv,
                 TTNode* p1, TTNode* p2,
                 TTNode* p3);
+        TTNode(TTNode* t){_center = t->_center;_left=t->_left;_right=t->_right;
+                         _lval=t->_lval;_lkey=t->_lkey;_rval=t->_rval;_rkey=t->_rkey;}
+                         
   		bool isLeaf() { return _left == nullptr; }
   		TTNode* lchild() { return _left; }
   		TTNode* rchild() { return _right; }

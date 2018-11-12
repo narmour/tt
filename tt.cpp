@@ -11,45 +11,6 @@ TTNode::TTNode(string lk, vector<int> lv, string rk, vector<int> rv,
   		};
 
 
-
-// Add a new key/value pair to the node. There might be a subtree
-// associated with the record being added. This information comes
-// in the form of a 2-3 tree node with one key and a (possibly null)
-// subtree through the center pointer field.
-TTNode* TTNode::add(TTNode* it) {
-  if (_rkey.empty()) { // Only one key, add here
-    if (_lkey  < it->lkey()) {
-      _rkey = it->lkey(); _rval = it->lval();
-      _center = it->lchild(); _right = it->cchild();
-    }
-    else {
-      _rkey = _lkey; _rval = _lval; _right = _center;
-      _lkey = it->lkey(); _lval = it->lval();
-      _center = it->cchild();
-    }
-    return this;
-  }
-  else if (_lkey >= it->lkey()) { // Add left
-    TTNode *N1 = new TTNode(_lkey, _lval, string(), vector<int>() , it, this, nullptr);
-    it->setLeftChild(_left);
-    _left = _center; _center = _right; _right = nullptr;
-    _lkey = _rkey; _lval = _rval; _rkey = nullptr; _rval = vector<int>();
-    return N1;
-  }
-  else if (_rkey >= it->lkey()) { // Add center
-    it->setCenterChild(new TTNode (_rkey, _rval, "", vector<int>(), it->cchild(), _right, nullptr));
-    it->setLeftChild(this);
-    _rkey = nullptr; _rval = vector<int>(); _right = nullptr;
-    return it;  //TODO: this might be a problem
-  }
-  else { // Add right
-    TTNode *N1 = new TTNode (_rkey, _rval, "", vector<int>(), this, it, nullptr);
-    it->setLeftChild(_right);
-    _right = nullptr; _rkey = nullptr; _rval = vector<int>();
-    return N1;
-  }
-}
-
 vector<int>  TT::findhelp(TTNode* root, string k) {
   if (root == nullptr) return vector<int>();          // val not found
   if (k == root->lkey()) return root->lval();
@@ -64,17 +25,63 @@ vector<int>  TT::findhelp(TTNode* root, string k) {
   else return findhelp(root->rchild(), k); // Search right
 }
 
+// Add a new key/value pair to the node. There might be a subtree
+// associated with the record being added. This information comes
+// in the form of a 2-3 tree node with one key and a (possibly null)
+// subtree through the center pointer field.
+TTNode* TTNode::add(TTNode* it) {
+  if (_rkey.empty()) { // Only one key, add here
+    if (_lkey  < it->lkey()) {
+        cout << "ADD 1\n";
+      _rkey = it->lkey(); _rval = it->lval();
+      _center = it->lchild(); _right = it->cchild();
+    }
+    else {
+        cout << "ADD 2\n";
+      _rkey = _lkey; _rval = _lval; _right = _center;
+      _lkey = it->lkey(); _lval = it->lval();
+      _center = it->cchild();
+    }
+    return this;
+  }
+  else if (_lkey >= it->lkey()) { // Add left
+    cout << "ADD    left\n";
+    TTNode *N1 = new TTNode(_lkey, _lval, string(), vector<int>() , it, this, nullptr);
+    it->setLeftChild(_left);
+    _left = _center; _center = _right; _right = nullptr;
+    _lkey = _rkey; _lval = _rval; _rkey = nullptr; _rval = vector<int>();
+    return N1;
+  }
+  else if (_rkey >= it->lkey()) { // Add center
+    cout << "ADD    center\n";
+    TTNode* temp = new TTNode(it);
+    temp->setCenterChild(new TTNode (_rkey, _rval, "", vector<int>(), it->cchild(), _right, nullptr));
+    temp->setLeftChild(this);
+    _rkey = nullptr; _rval = vector<int>(); _right = nullptr;
+    return temp;  //TODO: this might be a problem
+  }
+  else { // Add right
+    cout << "ADD    right\n";
+    TTNode *N1 = new TTNode (_rkey, _rval, "", vector<int>(), this, it, nullptr);
+    it->setLeftChild(_right);
+    _right = nullptr; _rkey = nullptr; _rval = vector<int>();
+    return N1;
+  }
+}
 
 // add  line to key k's line vector
 TTNode *inserthelp(TTNode* rt, string k,int line,int &distinctWords) {
   TTNode* retval;
   if (rt == nullptr){ // Empty tree: create a leaf node for root
+      cout << "INSERTHELP making empty tree:\n";
     retval = new TTNode(k, vector<int>(), "", vector<int>(), nullptr, nullptr, nullptr);
     retval->add_lval(line);
     distinctWords++;
     return retval;
   }
   if (rt->isLeaf()){ // At leaf node: insert here
+      cout << "INSERTHELP inserting at leaf node:\n";
+
       TTNode* temp = new TTNode(k, vector<int>(), "", vector<int>(), nullptr, nullptr, nullptr);
       temp->add_lval(line);
     distinctWords++;
@@ -82,16 +89,19 @@ TTNode *inserthelp(TTNode* rt, string k,int line,int &distinctWords) {
   }
   // Add to internal node
   if (k < rt->lkey()) { // Insert left
+      cout << "INSERTHELP insert left\n";
     retval = inserthelp(rt->lchild(), k,line,distinctWords);
     if (retval == rt->lchild()) return rt;
     else return rt->add(retval);
   }
   else if((rt->rkey().empty()) || (k < rt->rkey())) {
+      cout << "INSERTHELP insert center child\n";
     retval = inserthelp(rt->cchild(), k,line,distinctWords);
     if (retval == rt->cchild()) return rt;
     else return rt->add(retval);
   }
   else { // Insert right
+      cout << "INSERTHELP insert right child\n";
     retval = inserthelp(rt->rchild(), k,line,distinctWords);
     if (retval == rt->rchild()) return rt;
     else return rt->add(retval);
@@ -126,7 +136,7 @@ void TT::buildTree(ifstream & input){
                 //TODO
 
                 cout << "inserting: " << tempWord << endl;
-                inserthelp(root, tempWord,line, distWords);
+                root = inserthelp(root, tempWord,line, distWords);
                 //Increment our total number of words inserted
                 numWords++;
                 //Clear out tempWord so we can use it again
@@ -153,8 +163,23 @@ void TT::buildTree(ifstream & input){
 
 	//cout << setw(40) << std::left
 	//<<"Height of BST is : " << treeHeight << endl;
- 
 }
 
+void TT::printTree(ostream &outs){
+    outs << "-----printing out TT-----\n";
+    printTreeHelper(root,outs);
+}
+
+
+void TT::printTreeHelper(TTNode* root,ostream &outs){
+    outs << "hi\n";
+    if(root == nullptr)
+        return;
+    else{
+        printTreeHelper(root->lchild(),outs);
+        outs << "print lval rval?\n";
+        printTreeHelper(root->rchild(),outs);
+    }
+}
 
 
