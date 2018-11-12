@@ -32,12 +32,12 @@ vector<int>  TT::findhelp(TTNode* root, string k) {
 TTNode* TTNode::add(TTNode* it) {
   if (_rkey.empty()) { // Only one key, add here
     if (_lkey  < it->lkey()) {
-        cout << "ADD 1\n";
+        //cout << "ADD 1\n";
       _rkey = it->lkey(); _rval = it->lval();
       _center = it->lchild(); _right = it->cchild();
     }
     else {
-        cout << "ADD 2\n";
+        //cout << "ADD 2\n";
       _rkey = _lkey; _rval = _lval; _right = _center;
       _lkey = it->lkey(); _lval = it->lval();
       _center = it->cchild();
@@ -45,26 +45,29 @@ TTNode* TTNode::add(TTNode* it) {
     return this;
   }
   else if (_lkey >= it->lkey()) { // Add left
-    cout << "ADD    left\n";
+    //cout << "ADD    left\n";
     TTNode *N1 = new TTNode(_lkey, _lval, string(), vector<int>() , it, this, nullptr);
     it->setLeftChild(_left);
     _left = _center; _center = _right; _right = nullptr;
-    _lkey = _rkey; _lval = _rval; _rkey = nullptr; _rval = vector<int>();
+    _lkey = _rkey; _lval = _rval; _rkey = ""; _rval = vector<int>();
     return N1;
   }
   else if (_rkey >= it->lkey()) { // Add center
-    cout << "ADD    center\n";
+    //cout << "ADD    center\n";
     TTNode* temp = new TTNode(it);
+    //cout << "temp->lkey:" << temp->lkey() << endl;
     temp->setCenterChild(new TTNode (_rkey, _rval, "", vector<int>(), it->cchild(), _right, nullptr));
     temp->setLeftChild(this);
-    _rkey = nullptr; _rval = vector<int>(); _right = nullptr;
+    _rkey = "";
+    _rval = vector<int>();
+    _right = nullptr;
     return temp;  //TODO: this might be a problem
   }
   else { // Add right
-    cout << "ADD    right\n";
+    //cout << "ADD    right\n";
     TTNode *N1 = new TTNode (_rkey, _rval, "", vector<int>(), this, it, nullptr);
     it->setLeftChild(_right);
-    _right = nullptr; _rkey = nullptr; _rval = vector<int>();
+    _right = nullptr; _rkey = ""; _rval = vector<int>();
     return N1;
   }
 }
@@ -73,35 +76,37 @@ TTNode* TTNode::add(TTNode* it) {
 TTNode *inserthelp(TTNode* rt, string k,int line,int &distinctWords) {
   TTNode* retval;
   if (rt == nullptr){ // Empty tree: create a leaf node for root
-      cout << "INSERTHELP making empty tree:\n";
+      //cout << "INSERTHELP making empty tree:\n";
     retval = new TTNode(k, vector<int>(), "", vector<int>(), nullptr, nullptr, nullptr);
     retval->add_lval(line);
     distinctWords++;
     return retval;
   }
   if (rt->isLeaf()){ // At leaf node: insert here
-      cout << "INSERTHELP inserting at leaf node:\n";
+      //cout << "INSERTHELP inserting at leaf node:\n";
 
       TTNode* temp = new TTNode(k, vector<int>(), "", vector<int>(), nullptr, nullptr, nullptr);
       temp->add_lval(line);
     distinctWords++;
-    return rt->add(temp);
+    retval = rt->add(temp);
+    //cout << "got back from add\n";
+    return retval;
   }
   // Add to internal node
   if (k < rt->lkey()) { // Insert left
-      cout << "INSERTHELP insert left\n";
+      //cout << "INSERTHELP insert left\n";
     retval = inserthelp(rt->lchild(), k,line,distinctWords);
     if (retval == rt->lchild()) return rt;
     else return rt->add(retval);
   }
   else if((rt->rkey().empty()) || (k < rt->rkey())) {
-      cout << "INSERTHELP insert center child\n";
+      //cout << "INSERTHELP insert center child\n";
     retval = inserthelp(rt->cchild(), k,line,distinctWords);
     if (retval == rt->cchild()) return rt;
     else return rt->add(retval);
   }
   else { // Insert right
-      cout << "INSERTHELP insert right child\n";
+      //cout << "INSERTHELP insert right child\n";
     retval = inserthelp(rt->rchild(), k,line,distinctWords);
     if (retval == rt->rchild()) return rt;
     else return rt->add(retval);
@@ -172,14 +177,12 @@ void TT::printTree(ostream &outs){
 
 
 void TT::printTreeHelper(TTNode* root,ostream &outs){
-    outs << "hi\n";
-    if(root == nullptr)
+    if(root ==nullptr)
         return;
-    else{
-        printTreeHelper(root->lchild(),outs);
-        outs << "print lval rval?\n";
-        printTreeHelper(root->rchild(),outs);
+    else if (root->isLeaf()){
+        cout << "at leaf:   lkey: " << root->lkey() << "    rkey: " << root->rkey() << endl;
     }
+
 }
 
 
