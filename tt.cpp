@@ -54,14 +54,20 @@ TTNode* TTNode::add(TTNode* it) {
   }
   else if (_rkey >= it->lkey()) { // Add center
     //cout << "ADD    center\n";
-    TTNode* temp = new TTNode(it);
+    //TTNode* temp = new TTNode(it);
     //cout << "temp->lkey:" << temp->lkey() << endl;
-    temp->setCenterChild(new TTNode (_rkey, _rval, "", vector<int>(), it->cchild(), _right, nullptr));
-    temp->setLeftChild(this);
+    //temp->setCenterChild(new TTNode (_rkey, _rval, "", vector<int>(), it->cchild(), _right, nullptr));
+    //temp->setLeftChild(this);
+    //_rkey = "";
+    //_rval = vector<int>();
+    //_right = nullptr;
+    it->setCenterChild(new TTNode (_rkey, _rval, "", vector<int>(), it->cchild(), _right, nullptr));
+    it->setLeftChild(this);
     _rkey = "";
     _rval = vector<int>();
     _right = nullptr;
-    return temp;  //TODO: this might be a problem
+    
+    return it;  //TODO: this might be a problem
   }
   else { // Add right
     //cout << "ADD    right\n";
@@ -77,20 +83,27 @@ TTNode *inserthelp(TTNode* rt, string k,int line,int &distinctWords) {
   TTNode* retval;
   if (rt == nullptr){ // Empty tree: create a leaf node for root
       //cout << "INSERTHELP making empty tree:\n";
-    retval = new TTNode(k, vector<int>(), "", vector<int>(), nullptr, nullptr, nullptr);
-    retval->add_lval(line);
+    //retval = new TTNode(k, vector<int>(), "", vector<int>(), nullptr, nullptr, nullptr);
+    //retval->add_lval(line);
     distinctWords++;
-    return retval;
+    //return retval;
+    vector<int> v;
+    v.push_back(line);
+    return new TTNode(k, v, "", vector<int>(), nullptr, nullptr, nullptr);
+    
   }
   if (rt->isLeaf()){ // At leaf node: insert here
       //cout << "INSERTHELP inserting at leaf node:\n";
 
-      TTNode* temp = new TTNode(k, vector<int>(), "", vector<int>(), nullptr, nullptr, nullptr);
-      temp->add_lval(line);
+      //TTNode* temp = new TTNode(k, vector<int>(), "", vector<int>(), nullptr, nullptr, nullptr);
+      //temp->add_lval(line);
     distinctWords++;
-    retval = rt->add(temp);
+    //retval = rt->add(temp);
     //cout << "got back from add\n";
-    return retval;
+    //return retval;
+    vector<int> v;
+    v.push_back(line);
+    return rt->add(new TTNode(k, v, "", vector<int>(), nullptr, nullptr, nullptr));
   }
   // Add to internal node
   if (k < rt->lkey()) { // Insert left
@@ -176,13 +189,29 @@ void TT::printTree(ostream &outs){
 }
 
 
+
+
+// http://pages.cs.wisc.edu/~paton/readings/Old/fall01/2-3Tree.html
 void TT::printTreeHelper(TTNode* root,ostream &outs){
     if(root ==nullptr)
         return;
     else if (root->isLeaf()){
-        cout << "at leaf:   lkey: " << root->lkey() << "    rkey: " << root->rkey() << endl;
+        cout << root->lkey()<<  "\t" << root->rkey() << endl;
+    }
+    else if (root->rchild() == nullptr){ // 2 node
+        printTreeHelper(root->lchild(),outs);
+        cout  << root->lkey() << "\t" << root->rkey() << endl;
+        printTreeHelper(root->cchild(),outs);
+    }
+    else{// 3 node
+        printTreeHelper(root->lchild(),outs);
+        cout  << root->lkey() << endl;
+        printTreeHelper(root->cchild(),outs);
+        cout  << root->rkey() << endl;
+        printTreeHelper(root->rchild(),outs);
     }
 
 }
+
 
 
