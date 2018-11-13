@@ -92,6 +92,15 @@ TTNode *inserthelp(TTNode* rt, string k,int line,int &distinctWords) {
     return new TTNode(k, v, "", vector<int>(), nullptr, nullptr, nullptr);
     
   }
+  // check for duplicates?
+  if(k == rt->lkey()){
+      rt->add_lval(line);
+      return rt;
+  }
+  if(k == rt->rkey()){
+      rt->add_rval(line);
+      return rt;
+  }
   if (rt->isLeaf()){ // At leaf node: insert here
       //cout << "INSERTHELP inserting at leaf node:\n";
 
@@ -105,6 +114,7 @@ TTNode *inserthelp(TTNode* rt, string k,int line,int &distinctWords) {
     v.push_back(line);
     return rt->add(new TTNode(k, v, "", vector<int>(), nullptr, nullptr, nullptr));
   }
+
   // Add to internal node
   if (k < rt->lkey()) { // Insert left
       //cout << "INSERTHELP insert left\n";
@@ -153,8 +163,9 @@ void TT::buildTree(ifstream & input){
                 //file it came from, the root of our tree, and the distinct word counter
                 //TODO
 
-                cout << "inserting: " << tempWord << endl;
-                root = inserthelp(root, tempWord,line, distWords);
+                //cout << "inserting: " << tempWord << endl;
+                //if(findhelp(root,tempWord).size()==0)
+                    root = inserthelp(root, tempWord,line, distWords);
                 //Increment our total number of words inserted
                 numWords++;
                 //Clear out tempWord so we can use it again
@@ -164,6 +175,7 @@ void TT::buildTree(ifstream & input){
 		}
 		line++;
 	}
+
 	//Do time and height calculation
 	finishTime = clock();
 	totalTime = (double) (finishTime - startTime)/CLOCKS_PER_SEC;
@@ -196,18 +208,41 @@ void TT::printTreeHelper(TTNode* root,ostream &outs){
     if(root ==nullptr)
         return;
     else if (root->isLeaf()){
-        cout << root->lkey()<<  "\t" << root->rkey() << endl;
+        cout << root->lkey() << "\t";
+        for (int l :root->lval())
+            cout << l << "   ";
+        cout << endl;
+        cout << root->rkey() << "\t";
+        for (int l :root->rval())
+            cout << l << "   ";
+        cout << endl;
     }
     else if (root->rchild() == nullptr){ // 2 node
         printTreeHelper(root->lchild(),outs);
-        cout  << root->lkey() << "\t" << root->rkey() << endl;
+        //cout  << root->lkey() << "\t" << root->rkey() << endl;
+        cout << root->lkey() << "\t";
+        for (int l :root->lval())
+            cout << l << "   ";
+        cout << endl;
+        cout << root->rkey() << "\t";
+        for (int l :root->rval())
+            cout << l << "   ";
+        cout << endl;
         printTreeHelper(root->cchild(),outs);
     }
     else{// 3 node
         printTreeHelper(root->lchild(),outs);
-        cout  << root->lkey() << endl;
+        //cout  << root->lkey() << endl;
+        cout << root->lkey() << "\t";
+        for (int l :root->lval())
+            cout << l << "   ";
+        cout << endl;
         printTreeHelper(root->cchild(),outs);
-        cout  << root->rkey() << endl;
+        //cout  << root->rkey() << endl;
+        cout << root->rkey() << "\t";
+        for (int l :root->rval())
+            cout << l << "   ";
+        cout << endl;
         printTreeHelper(root->rchild(),outs);
     }
 

@@ -27,6 +27,7 @@ class TTNode{
   		string lkey() { return _lkey; }  // Left key
   		vector<int> lval() { return _lval; }  // Left value
         void add_lval(int l){_lval.push_back(l);}
+        void add_rval(int l){_rval.push_back(l);}
   		string rkey() { return _rkey; }  // Right key
   		vector<int> rval() { return _rval; }  // Right value
   		void setLeft(string k, vector<int> e) { _lkey = k; _lval = e; }
