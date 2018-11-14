@@ -29,6 +29,30 @@ int main(int argc, char* argv[]) {
     else if (opt == "b")
         use_bst=0;
     else if (opt == "c"){
+            cout << " building BST...\n";
+            myBST.buildTree(input);
+			input.clear();
+			input.seekg(0, ios::beg);
+            cout << "building TT...\n";
+            myTT.buildTree(input);
+
+			// compare the time taken to search all words in index
+			double totalTime, finishTime, startTime = clock();
+			for(string w :myTT.words()){
+				if(!myBST.search(w))
+					cout << "ERROR\n";
+			} 
+			finishTime = clock() - startTime;
+			cout << "Total time taken by BST: " << finishTime << endl;;
+			totalTime, finishTime, startTime = clock();
+			for(string w :myTT.words()){
+				if(myTT.findhelp(myTT.getRoot(),w).size() <1)
+					cout << "ERROR\n";
+			} 
+			finishTime = clock() - startTime;
+			cout << "Total time taken by TT: " << finishTime << endl;;
+			return 0;
+
     }
     else{
         cout << "error" << endl;

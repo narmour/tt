@@ -18,6 +18,10 @@ class BST{
         bool isEmpty();
         void printTree(ostream & out = cout) const;
         void buildTree(ifstream & input);
+        bool search(string k){
+            node* n;
+            return containsHelper(k,root,n);
+        }
     private:
     struct node{
 	    node(const string &x, node *l, node *r)

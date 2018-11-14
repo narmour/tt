@@ -139,6 +139,7 @@ void TT::buildTree(ifstream & input){
 	int line = 1, numWords = 0, distWords = 0, treeHeight = 0;
 	stringstream tempWord;
 	double totalTime, finishTime, startTime = clock();
+	
 	while (!input.eof()) {
 		string tempLine, tempWord;
 
@@ -164,6 +165,7 @@ void TT::buildTree(ifstream & input){
 
                 //cout << "inserting: " << tempWord << endl;
                 //if(findhelp(root,tempWord).size()==0)
+				_words.push_back(tempWord);
                 root = inserthelp(root, tempWord,line, distWords);
                 //Increment our total number of words inserted
                 numWords++;
