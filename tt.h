@@ -7,6 +7,9 @@ class TT{
         void buildTree(ifstream &input);
         void printTree(ostream &outs);
         vector<int> findhelp(TTNode* root, string key);
+        void contains();
+        int findHeight(TTNode* root);
+
 	private:
         void printTreeHelper(TTNode* root,ostream &outs);
 		TTNode* root;

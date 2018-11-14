@@ -4,7 +4,7 @@
 
 #include <iostream>
 #include <fstream>
-//#include "bst.h"
+#include "bst.h"
 #include "tt.h"
 using namespace std;
 
@@ -16,28 +16,54 @@ int main(int argc, char* argv[]) {
 	}
 
 	ifstream input(argv[1]);
-	//BST myTree;
-	TT myTree;
+	BST myBST;
+	TT myTT;
+
+	cout <<"Options: (a) BST, (b) 2-3 Tree, (c) Compare BST and 2-3 Tree\n";
+    string opt;
+    cin >> opt;
+
+    bool use_bst = 0;
+    if(opt == "a")
+        use_bst=1;
+    else if (opt == "b")
+        use_bst=0;
+    else if (opt == "c"){
+    }
+    else{
+        cout << "error" << endl;
+        return -1;
+    }
 
 	if(input.is_open()){
-            myTree.buildTree(input);
-            myTree.printTree(cout);
+        if(use_bst)
+            myBST.buildTree(input);
+        else
+            myTT.buildTree(input);
+            //myTree.buildTree(input);
+            //myTree.printTree(cout);
 
-            input.close();
-
-            /*
+            //input.close();
             while(1){
 	        choice = 0;
 	        cout <<"Options: (1) display index, (2) search, (3) save index, (4) quit\n";
 	        cin >> choice;
 
 		//Print index
-	        if(choice == 1)
-	            myTree.printTree(cout);
+	        if(choice == 1){
+                if(use_bst)
+	                myBST.printTree(cout);
+                else
+                    myTT.printTree(cout);
+            }
 	       
 		//Search index for a word
-		else if(choice == 2)
-	            myTree.contains();
+		else if(choice == 2){
+            if(use_bst)
+	            myBST.contains();
+            else
+                myTT.contains();
+        }
 
 		//Save index
 	        else if(choice == 3){
@@ -45,7 +71,10 @@ int main(int argc, char* argv[]) {
 	            cout << "Enter a filename to save your index to (Suggested: <filename>.txt) : ";
 		    cin >> outputFile;
 		    ofstream output(outputFile.c_str());
-	            myTree.printTree(output);
+            if(use_bst)
+	            myBST.printTree(output);
+            else
+                myTT.printTree(output);
 	            output.close();
 		    cout << "Saved\n";
 	        }
@@ -54,7 +83,6 @@ int main(int argc, char* argv[]) {
 	        else
 		    break;
             }
-            */
         }
 	else{
 	    cout << "Invalid File Name. Restart Program.\n";
