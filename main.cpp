@@ -47,7 +47,9 @@ int main(int argc, char* argv[]) {
 			totalTime, finishTime, startTime = clock();
 			for(string w :myTT.words()){
 				if(myTT.findhelp(myTT.getRoot(),w).size() <1)
-					cout << "ERROR\n";
+					//cout << "ERROR: " << w << " not in tree\n";
+					cout << "";
+				//myTT.findhelp(myTT.getRoot(),w);
 			} 
 			finishTime = clock() - startTime;
 			cout << "Total time taken by TT: " << finishTime << endl;;
